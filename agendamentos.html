@@ -37,12 +37,8 @@
                             <th scope="col">Serviço</th>
                           </tr>
                         </thead>
-                        <tbody>
-                          <tr class="">
-                            <td valign="middle" id="data"></td>
-                            <td valign="middle" id="hora"></td>
-                            <td valign="middle" id="servico"></td>
-                          </tr>
+                        <tbody id="lista">
+                          
                         </tbody>
                       </table>
                 </div>
@@ -59,7 +55,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.8.4/firebase-app.js";
     import { getDatabase, set, ref, update, onValue, get } from "https://www.gstatic.com/firebasejs/9.8.4/firebase-database.js"
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.8.4/firebase-auth.js";
-    import { doc, onSnapshot, getFirestore, where, collection, query, getDocs } from "https://www.gstatic.com/firebasejs/9.8.4/firebase-firestore.js";
+    import { doc, onSnapshot, getFirestore, where, collection, query, getDocs, orderBy } from "https://www.gstatic.com/firebasejs/9.8.4/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyAmBDH9pdq7bo7QIoU9T7uvXxuZG-YS_JE",
@@ -101,38 +97,46 @@
         });
     });
 
-    var id_servico = document.getElementById('servico');
+    
 
     const dbFireStore = getFirestore(app);
     const agendsRef = collection(dbFireStore, "Agendamentos");
 
-    const querySnapshot = await getDocs(collection(dbFireStore, "Agendamentos"));
+    const q = query(agendsRef, orderBy("data", "asc"));
+
+    const querySnapshot = await getDocs(q);
+
+    
+
+
     querySnapshot.forEach(doc => {
-      const servico = doc.data().servico;
-      const data = doc.data().data;
-      const hora = doc.data().hora;
-
-      console.log(doc.data())
-
-      console.log(doc.data().data);
-
+      let id_lista = document.getElementById('lista');
       
 
+      console.log(doc.data());
 
-      
+      let tr = document.createElement('tr')
+      let tdData = document.createElement('td');
+      let tdHora = document.createElement('td');
+      let tdServico = document.createElement('td');
+
+      tdData.innerText = doc.data().data;
+      tdHora.innerText = doc.data().hora;
+      tdServico.innerText = doc.data().servico;
+
+      tr.appendChild(tdData);
+      tr.appendChild(tdHora);
+      tr.appendChild(tdServico);
+
+
+      id_lista.appendChild(tr);
 
     });
-    
-    
 
-    
-
-    
-    
-
+    setTimeout(function() {
+      window.location.reload(1);
+    }, 600000);
     
     
-
-
   </script>
 </html>
