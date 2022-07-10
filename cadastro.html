@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="">
+        <script src="js/firebase.js"></script>
+    </head>
+    <body>
+        <div>
+            <input type="text" placeholder="email" id="email"/>
+            <input type="text" placeholder="senha" id="password"/>
+        </div>
+
+        <div>
+            <input type="submit" id="login" name="Login" value="Login"/>
+        </div>
+        
+        
+    </body>
+
+    <script type="module">
+        
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.8.4/firebase-app.js";
+        import { getDatabase, set, ref, update } from "https://www.gstatic.com/firebasejs/9.8.4/firebase-database.js"
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.8.4/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAmBDH9pdq7bo7QIoU9T7uvXxuZG-YS_JE",
+            authDomain: "edubarber-ad022.firebaseapp.com",
+            projectId: "edubarber-ad022",
+            storageBucket: "edubarber-ad022.appspot.com",
+            messagingSenderId: "441531318767",
+            appId: "1:441531318767:web:904a1b9cb4f6362e1c361a"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+        const auth = getAuth();
+
+        
+
+
+        login.addEventListener('click', (e)=>{
+            var email = document.getElementById('email').value;
+            var password = document.getElementById('password').value;
+
+            signInWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+                // Signed in
+                const user = userCredential.user;
+
+                const dt = new Date();
+
+                update(ref(database, 'admin-users/' + user.uid),{
+                    last_loging: dt,
+                })
+
+                alert('user loged');
+                // ...
+            })
+            .catch((error) => {
+                const errorCode = error.code;
+                const errorMessage = error.message;
+
+                alert(errorMessage);
+            });
+
+        });
+
+        const user = auth.currentUser;
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // User is signed in, see docs for a list of available properties
+                // https://firebase.google.com/docs/reference/js/firebase.User
+                const uid = user.uid;
+                // ...
+            } else {
+                // User is signed out
+                // ...
+            }
+        });
+
+        logout.addEventListener('click', (e)=>{
+            signOut(auth).then(() => {
+            // Sign-out successful.
+            }).catch((error) => {
+            // An error happened.
+            });
+
+
+        });
+
+    </script>
+</html>
