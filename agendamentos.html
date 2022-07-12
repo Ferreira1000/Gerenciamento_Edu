@@ -55,7 +55,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.8.4/firebase-app.js";
     import { getDatabase, set, ref, update, onValue, get } from "https://www.gstatic.com/firebasejs/9.8.4/firebase-database.js"
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.8.4/firebase-auth.js";
-    import { doc, onSnapshot, getFirestore, where, collection, query, getDocs, orderBy } from "https://www.gstatic.com/firebasejs/9.8.4/firebase-firestore.js";
+    import { doc, onSnapshot, getFirestore, where, collection, query, getDocs, orderBy, getDoc } from "https://www.gstatic.com/firebasejs/9.8.4/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyAmBDH9pdq7bo7QIoU9T7uvXxuZG-YS_JE",
@@ -66,25 +66,25 @@
         appId: "1:441531318767:web:904a1b9cb4f6362e1c361a"
     };
 
-    const app = initializeApp(firebaseConfig);
-    const database = getDatabase(app);
-    const auth = getAuth();
+    // pega a identificação do projeto do firebase e salva em um constatnte
 
-    const user = auth.currentUser;
+    const app = initializeApp(firebaseConfig); // inicia a constante de configuração
+    const database = getDatabase(app); // inicia a constante de config e busca os real time database nelas presentes
+    const auth = getAuth(); // importa o aunthenticator e salva em uma constante
+
+    const user = auth.currentUser; // salva em uma constate o usuário logado atual, caso tiver
 
     onAuthStateChanged(auth, (user) => {
         if (user) {
-            // User is signed in, see docs for a list of available properties
-            // https://firebase.google.com/docs/reference/js/firebase.User
             const uid = user.uid;
 
-            
-            // ...
         } else {
           window.location.replace('index.html')
           
         }
     });
+
+    // detecta alterações de estado no authenticator
 
     logout.addEventListener('click', (e)=>{
         signOut(auth).then(() => {
@@ -97,22 +97,18 @@
         });
     });
 
+    // executa a função de logout e deleta oq tiver salvo no aunthenticator
+
+    const dbFireStore = getFirestore(app); // constante que inicia o banco do firestore no projeto definido "app"
     
+    const agendsRef = collection(dbFireStore, "Agendamentos/Julho/13"); // busca a coleção definida
+    const q = query(agendsRef, orderBy("Hora", "desc")); // faz a consulta atrás do campo "Data" nos documentos da coleção definida e os coloca em ordem crescente 
 
-    const dbFireStore = getFirestore(app);
-    const agendsRef = collection(dbFireStore, "Agendamentos");
+    const querySnapshot = await getDocs(q); // espera para ser executado e puxa todos os documentos da coleção definida
 
-    const q = query(agendsRef, orderBy("data", "asc"));
-
-    const querySnapshot = await getDocs(q);
-
-    
-
-
-    querySnapshot.forEach(doc => {
+    querySnapshot.forEach(doc => { // função q pega os docs do banco e pra cada um escreve os dados na lista
       let id_lista = document.getElementById('lista');
       
-
       console.log(doc.data());
 
       let tr = document.createElement('tr')
@@ -120,9 +116,9 @@
       let tdHora = document.createElement('td');
       let tdServico = document.createElement('td');
 
-      tdData.innerText = doc.data().data;
-      tdHora.innerText = doc.data().hora;
-      tdServico.innerText = doc.data().servico;
+      tdData.innerText = doc.data().Data;
+      tdHora.innerText = doc.data().Hora;
+      tdServico.innerText = doc.data().Servico;
 
       tr.appendChild(tdData);
       tr.appendChild(tdHora);
@@ -132,7 +128,7 @@
       id_lista.appendChild(tr);
 
     });
-
+    
     setTimeout(function() {
       window.location.reload(1);
     }, 600000);

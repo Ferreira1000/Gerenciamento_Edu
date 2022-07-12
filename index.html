@@ -62,6 +62,19 @@
 			login.addEventListener('click', (e)=>{
 				var email = document.getElementById('email').value;
 				var password = document.getElementById('password').value;
+				
+				if(email === '' && password === ''){
+					alert('Prencha todos os campos!')
+					return;
+				}
+				if(email === ''){
+					alert('Prencha o campo e-mail!')
+					return;
+				}
+				if(password === ''){
+					alert('Prencha o campo senha!')
+					return;
+				}
 	
 				signInWithEmailAndPassword(auth, email, password)
 				.then((userCredential) => {
@@ -74,7 +87,7 @@
 						last_loging: dt,
 					})
 	
-					alert('user loged');
+					alert('Usuário logado com sucesso!');
 
 					window.location.replace('agendamentos.html')
 					// ...
@@ -82,8 +95,19 @@
 				.catch((error) => {
 					const errorCode = error.code;
 					const errorMessage = error.message;
+
+					if(errorMessage === 'Firebase: Error (auth/invalid-email).'){
+						alert('E-mail inválido! Tente novamente!')
+					}
+					if(errorMessage === 'Firebase: Error (auth/wrong-password).'){
+						alert('Senha inválida! Tente novamente!')
+					}
+					if(errorMessage === 'Firebase: Error (auth/user-not-found).'){
+						alert('Usuário com o email "'+email+'" não encontrado! Tente novamente!')
+					}
 	
-					alert(errorMessage);
+					
+					console.log(errorMessage);
 				});
 	
 			});
